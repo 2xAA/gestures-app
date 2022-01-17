@@ -74,8 +74,9 @@ function Recording() {
 
   useEffect(() => {
     const hands = new Hands({
-      locateFile: file => {   
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
+      locateFile: e => {   
+        return"https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/".concat(e)
+        // return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
       }
     
     })
@@ -133,8 +134,8 @@ function Recording() {
           right: 0,
           textAlign: "center",
           zindex: 9,
-          width: 640,
-          height: 480
+          // width: 640,
+          // height: 480
         }}
       ></canvas>
     </>
