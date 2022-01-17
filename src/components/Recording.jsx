@@ -110,8 +110,6 @@ function Recording() {
         },
         width: bounds.width,
         height: bounds.height,
-        width: bounds.width,
-        height: bounds.height,
       })
       camera.start()
     }
@@ -123,17 +121,24 @@ function Recording() {
       style={{
         // border: "orange solid 2px",
         position: "absolute",
-        width: "100%",
-        height: "50%",
+        width: "640px",
+        // maxWidth: "500px",
+        height: "500px",
+        left: "50%",
+        top: "4%",
+        transform: "translate(-50%, 0)",
       }}
     >
       <Webcam
         ref={webcamRef}
         style={{
           position: "absolute",
+          width: "640px",
 
-          width: "100%",
-          height: "100%",
+          height: "500px",
+
+          // width: "100%",
+          // height: "100%",
           // position: "absolute",
           // marginLeft: "auto",
           // marginRight: "auto",

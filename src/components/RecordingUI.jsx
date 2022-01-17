@@ -40,7 +40,7 @@ function RecordingUI() {
   return (
     <>
       <Holder>
-        <Title>show hand</Title>
+        <Title>raise hand</Title>
         {transition(
           (style, item) => item && <AnimatedCountdown style={style} />
         )}
