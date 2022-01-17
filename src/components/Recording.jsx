@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react"
+import React, { useRef, useEffect } from "react"
 import { Hands } from "@mediapipe/hands"
 import * as cam from "@mediapipe/camera_utils"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
@@ -12,26 +12,26 @@ import { useStore } from "../state/store"
 function Recording() {
   const webcamRef = useRef(null)
   const canvasRef = useRef(null)
-  const saving = useRef()
+  // const saving = useRef()
 
   const setCanRecord = useStore(state => state.setCanRecord)
   const setClientsArr = useStore(state => state.setClientsArr)
 
   const arrRef = useRef()
 
-  const handleClick = () => {
-    saving.current = !saving.current
-  }
+  // const handleClick = () => {
+  //   saving.current = !saving.current
+  // }
 
   useEffect(() => {
-    arrRef.current = []
-  }, [saving.current])
+    arrRef.current = [];
+  }, [arrRef])
 
   var camera = null
-  var clients = new Array()
+  var clients = []
 
   function onResults(results) {
-    const video = webcamRef.current.video
+    // const video = webcamRef.current.video
     const videoWidth = webcamRef.current.video.videoWidth
     const videoHeight = webcamRef.current.video.videoHeight
 
@@ -74,18 +74,10 @@ function Recording() {
 
   useEffect(() => {
     const hands = new Hands({
-      locateFile: file => {
-        // return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-        // return `node_modules/@mediapipe/hands/${file}`
+      locateFile: file => {   
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
-        // return `src/lib/@mediapipe/hands/${file}`
       }
-      // locateFile: file => {
-      //   // return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      //   // return `node_modules/@mediapipe/hands/${file}`
-      //   return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
-      //   // return `src/lib/@mediapipe/hands/${file}`
-      // }
+    
     })
 
     hands.setOptions({

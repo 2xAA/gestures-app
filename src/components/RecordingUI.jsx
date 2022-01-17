@@ -1,26 +1,25 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { useStore } from "../state/store"
 import { animated, useTransition } from "@react-spring/web"
 
-let textFile = null
+// let textFile = null
 
-const makeTextFile = text => {
-  var data = new Blob([text], { type: "text/plain" })
+// const makeTextFile = text => {
+//   var data = new Blob([text], { type: "text/plain" })
 
-  if (textFile !== null) {
-    window.URL.revokeObjectURL(textFile)
-  }
+//   if (textFile !== null) {
+//     window.URL.revokeObjectURL(textFile)
+//   }
 
-  textFile = window.URL.createObjectURL(data)
+//   textFile = window.URL.createObjectURL(data)
 
-  return textFile
-}
+//   return textFile
+// }
 
 function RecordingUI() {
-  const clientsArr = useStore(state => state.clientsArr)
   const canRecord = useStore(state => state.canRecord)
-  const linkRef = useRef()
+  // const linkRef = useRef()
 
   const transition = useTransition(canRecord, {
     from: { opacity: 0 },
@@ -34,9 +33,9 @@ function RecordingUI() {
     console.log("CARECORD", canRecord)
   }, [canRecord])
 
-  const handleSaveClick = data => {
-    linkRef.current.href = makeTextFile(data)
-  }
+  // const handleSaveClick = data => {
+  //   linkRef.current.href = makeTextFile(data)
+  // }
 
   return (
     <>
@@ -102,11 +101,11 @@ const RecordCountdown = styled(animated.div)`
   background-color: #dcdcdc55;
 `
 
-const SaveButton = styled.a`
-  flex: 1;
-  z-index: 10;
-  background-color: blue;
-`
+// const SaveButton = styled.a`
+//   flex: 1;
+//   z-index: 10;
+//   background-color: blue;
+// `
 
 const Holder = styled.div`
   position: absolute;
@@ -121,22 +120,3 @@ const Holder = styled.div`
 `
 
 export default RecordingUI
-
-{
-  /* <SaveButton ref={linkRef} download="info.txt" /> */
-}
-
-{
-  /* <div
-                onClick={() => handleSaveClick(clientsArr)}
-                style={{
-                  zIndex: 10,
-                  // position: "fixed",
-                  backgroundColor: "hotpink",
-                  top: "0",
-                  right: 0,
-                  width: "50px",
-                  height: "50px"
-                }}
-              /> */
-}

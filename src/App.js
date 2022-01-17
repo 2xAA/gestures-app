@@ -1,4 +1,3 @@
-import { useState } from "react"
 import styled from "styled-components"
 // import Home from "./pages/home/Home"
 import background from "./assets/images/background.jpg"
