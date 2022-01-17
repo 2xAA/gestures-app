@@ -30,7 +30,7 @@ function RecordingUI() {
   })
 
   useEffect(() => {
-    console.log("CARECORD", canRecord)
+    // console.log("CARECORD", canRecord)
   }, [canRecord])
 
   // const handleSaveClick = data => {
