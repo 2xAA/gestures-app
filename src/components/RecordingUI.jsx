@@ -18,7 +18,7 @@ import { animated, useTransition } from "@react-spring/web"
 // }
 
 function RecordingUI() {
-  const canRecord = useStore(state => state.canRecord)
+  const canRecord = useStore((state) => state.canRecord)
   // const linkRef = useRef()
 
   const transition = useTransition(canRecord, {
@@ -26,7 +26,7 @@ function RecordingUI() {
     enter: { opacity: 1 },
     leave: { opacity: 0 },
     config: { mass: 5, tension: 500, friction: 100 },
-    trail: 30
+    trail: 30,
   })
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function RecordingUI() {
   return (
     <>
       <Holder>
-        <Title>Raise Hand</Title>
+        <Title>show hand</Title>
         {transition(
           (style, item) => item && <AnimatedCountdown style={style} />
         )}
@@ -75,20 +75,22 @@ function Countdown({ style }) {
       ) : state !== null ? (
         <span>recording gesture</span>
       ) : (
-        <span>play</span>
+        <span>
+          <p>😃</p>
+        </span>
       )}
     </RecordCountdown>
   )
 }
 
 const Title = styled.div`
-  color: white;
+  color: #dcdcdcee;
   font-size: 3em;
 `
 
 const RecordCountdown = styled(animated.div)`
-  border: white solid 2px;
-  color: white;
+  border: #ccc0c0 33solid 2px;
+  color: #dcdcdccc;
   text-align: center;
   font-size: 2em;
   display: flex;
@@ -96,7 +98,7 @@ const RecordCountdown = styled(animated.div)`
   align-items: center;
   border-radius: 1rem;
   width: 9em;
-  height: 3em;
+  height: 2em;
 
   background-color: #dcdcdc55;
 `
@@ -110,9 +112,9 @@ const RecordCountdown = styled(animated.div)`
 const Holder = styled.div`
   position: absolute;
   width: 100%;
-  height: 20%;
+  height: 30%;
   /* border: orange 2px solid; */
-  bottom: 20%;
+  bottom: 10%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
