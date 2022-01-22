@@ -212,6 +212,7 @@ function Recording() {
           position: "absolute",
           bottom: 0,
           right: 0,
+          margin: "2%",
           width: "50%",
           height: "900px",
           border: "hotpink solid 1px",
@@ -256,6 +257,14 @@ function BoxTest({ arr, landmarks }) {
       // vec.set(0, arr[arr.length - 3] * 2, 0)
       // vec.set(0, landmarks.current[0].x * 3, 0)
 
+      // ambientRef.current.intensity =
+      //   THREE.MathUtils.lerp(
+      //     ambientRef.current.intensity,
+      //     Math.abs(landmarks.current[th].z * 0.4),
+      //     0.4
+      //   ) / 10
+      // console.log(ambientRef.current.intensity)
+      // console.log(Math.abs(landmarks.current[th].z * 3))
       ambientRef.current.intensity =
         THREE.MathUtils.lerp(
           ref.current.scale.y,
