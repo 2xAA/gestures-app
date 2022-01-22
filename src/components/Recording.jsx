@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react"
 import * as THREE from "three"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { Box, Html, OrbitControls } from "@react-three/drei"
+import { Box, Html, OrbitControls, Sphere } from "@react-three/drei"
 import { Hands } from "@mediapipe/hands"
 import * as cam from "@mediapipe/camera_utils"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
@@ -55,7 +55,7 @@ export function LogTest() {
         right: "4em",
         fontSize: "2rem",
         color: "blue",
-        background: "white",
+        background: "none",
         border: "1px solid gray",
         height: "80px",
         width: "80px",
@@ -172,7 +172,7 @@ function Recording() {
         onClick={() => {
           {
             // console.log(trueRef.current)
-            // setCanRecord(trueRef.current)
+            setCanRecord(trueRef.current)
             // useStore.setState({ clientsArr: clients })
             // setClientsArr(clients)
             // console.log(clients)
@@ -228,6 +228,7 @@ function Recording() {
 
 function BoxTest({ arr, landmarks }) {
   const ref = useRef()
+  const ambientRef = useRef()
 
   const vec = new THREE.Vector3()
   const thumb = new THREE.Vector3()
@@ -235,12 +236,11 @@ function BoxTest({ arr, landmarks }) {
   const th = 4
   const ind = 8
 
-  const dist = new THREE.Vector2()
   // const clientsArr = useStore((state) => state.clientsArr)
   const canRecord = useStore((state) => state.canRecord)
   let test = 0
   useFrame(() => {
-    test += 0.07
+    ambientRef.current.intensity = test += 0.07
     if (canRecord) {
       thumb.set(
         landmarks.current[th].x,
@@ -255,11 +255,27 @@ function BoxTest({ arr, landmarks }) {
 
       // vec.set(0, arr[arr.length - 3] * 2, 0)
       // vec.set(0, landmarks.current[0].x * 3, 0)
+
+      ambientRef.current.intensity =
+        THREE.MathUtils.lerp(
+          ref.current.scale.y,
+          thumb.distanceTo(index) * 10,
+          0.4
+        ) / 10
+
       ref.current.scale.y = THREE.MathUtils.lerp(
         ref.current.scale.y,
         thumb.distanceTo(index) * 10,
         0.4
       )
+      vec.set(0, landmarks.current[0].x, 0)
+
+      ref.current.rotation.y = THREE.MathUtils.lerp(
+        ref.current.rotation.y,
+        landmarks.current[0].x * 14,
+        0.09
+      )
+
       // ref.current.position.lerp(vec, 0.05)
     } else {
       vec.set(0, 0, 0)
@@ -270,10 +286,20 @@ function BoxTest({ arr, landmarks }) {
   })
 
   return (
-    <Box
-      material={new THREE.MeshBasicMaterial({ wireframe: true })}
-      ref={ref}
-    />
+    <>
+      <Box
+        args={[1.5, 1.5, 1.5]}
+        material={
+          new THREE.MeshStandardMaterial({ wireframe: false, color: "white" })
+        }
+        // material={new THREE.MeshBasicMaterial({ wireframe: true })}
+        ref={ref}
+      />
+      <pointLight position={[3, 3, 2]} color={"hotpink"} />
+      <pointLight position={[-3, 3, 2]} color={"darkblue"} />
+      {/* <Sphere position={[10, 3, -7]} /> */}
+      <ambientLight ref={ambientRef} color="white" intensity={0.1} />
+    </>
   )
 }
 
