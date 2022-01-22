@@ -1,12 +1,12 @@
 import create from "zustand"
 
-export const useStore = create(set => ({
+export const useStore = create((set) => ({
   clientsArr: [],
-  setClientsArr: v => set({ clientsArr: v }),
+  setClientsArr: (v) => set({ clientsArr: v }),
 
   recording: false,
-  setRecording: v => set({ recording: v }),
+  setRecording: (v) => set({ recording: v }),
 
   canRecord: false,
-  setCanRecord: v => set({ canRecord: v })
+  setCanRecord: (v) => set({ canRecord: v }),
 }))

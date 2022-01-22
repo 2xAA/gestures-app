@@ -1,14 +1,16 @@
 import styled from "styled-components"
 // import Home from "./pages/home/Home"
-import background from "./assets/images/background.jpg"
-import RecordingUI from "./components/RecordingUI"
-import Recording from "./components/Recording"
+import background from "assets/images/background.jpg"
+import RecordingUI from "components/RecordingUI"
+import Recording from "components/Recording"
+import { LogTest } from "components/Recording"
 
 function App() {
   return (
     <Holder>
-      <RecordingUI />
       <Recording />
+      <LogTest />
+      {/* <RecordingUI /> */}
       {/* <Home /> */}
     </Holder>
   )

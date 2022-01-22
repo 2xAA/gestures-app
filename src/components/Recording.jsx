@@ -1,51 +1,91 @@
-import React, { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
+import * as THREE from "three"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { Box, Html, OrbitControls } from "@react-three/drei"
 import { Hands } from "@mediapipe/hands"
 import * as cam from "@mediapipe/camera_utils"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import Webcam from "react-webcam"
-import { useStore } from "../state/store"
-import useMeasure from "react-use-measure"
+import { useStore } from "state/store"
+import styled from "styled-components"
 
-//make a routing for hand capturing
-//fake record for a few minutes and collect data
-//send output coordinates to the backend
+// return "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/".concat(e)
 
-function Recording() {
-  const webcamRef = useRef(null)
-  const canvasRef = useRef(null)
+export function LogTest() {
+  // console.log("renderLogtest")
 
-  const [ref, bounds] = useMeasure()
+  const [length, set] = useState(0)
+
+  const clientsArr = useStore((state) => state.clientsArr)
+  const canRecord = useStore((state) => state.canRecord)
+
+  // const clientsArr = useStore.getState().clientsArr
+
+  const ref = useRef()
+  const curr = useRef()
 
   useEffect(() => {
-    console.log(bounds)
-  }, [])
-  // const saving = useRef()
+    // console.log("CANRECORD")
+    ref.current.innerHTML = `${clientsArr.length} <br/>  ${
+      canRecord ? "true" : "false"
+    }`
+  }, [canRecord])
+
+  // const handleClick = (v) => {
+  //   console.log("click")
+  //   // console.log(clientsArr)
+  //   set(v)
+  // }
+
+  // useEffect(() => {
+  //   console.log(length)
+  //   ref.current.innerText = length
+
+  //   // console.dir("LOG", clientsArr)
+  //   // console.dir("TESXT", clientsArr.length)
+  //   // // if (clientsArr.isArray)
+  // }, [set, clientsArr])
+
+  return (
+    <div
+      ref={ref}
+      // onClick={() => handleClick(clientsArr.length)}
+      style={{
+        position: "absolute",
+        right: "4em",
+        fontSize: "2rem",
+        color: "blue",
+        background: "white",
+        border: "1px solid gray",
+        height: "80px",
+        width: "80px",
+      }}
+    >
+      {/* {Math.round(frameTime)} */}
+      <br />
+      {/* {clientsArr.length} */}
+    </div>
+  )
+}
+
+function Recording() {
+  const [isTrue, setIsTrue] = useState(false)
+  const curr = useRef()
+  const trueRef = useRef(false)
+  console.log("render record")
+
+  const webcamRef = useRef(null)
+  const canvasRef = useRef(null)
 
   const setCanRecord = useStore((state) => state.setCanRecord)
   const setClientsArr = useStore((state) => state.setClientsArr)
 
-  const arrRef = useRef()
-
-  // const handleClick = () => {
-  //   saving.current = !saving.current
-  // }
-
-  useEffect(() => {
-    arrRef.current = []
-  }, [arrRef])
-
   var camera = null
-  var clients = []
+  var clients = new Array()
 
   function onResults(results) {
-    // const video = webcamRef.current.video
-    const videoWidth = webcamRef.current.video.videoWidth
-    const videoHeight = webcamRef.current.video.videoHeight
-    // const videoWidth = webcamRef.current.video.videoWidth
-    // const videoHeight = webcamRef.current.video.videoHeight
-
-    canvasRef.current.width = videoWidth
-    canvasRef.current.height = videoHeight
+    canvasRef.current.width = webcamRef.current.video.videoWidth
+    canvasRef.current.height = webcamRef.current.video.videoHeight
 
     const canvasElement = canvasRef.current
     const canvasCtx = canvasElement.getContext("2d")
@@ -65,14 +105,28 @@ function Recording() {
       setCanRecord(true)
 
       for (const landmarks of results.multiHandLandmarks) {
-        landmarks.map((lm) => clients.push(lm.x, lm.y, lm.z))
+        curr.current = landmarks
 
+        landmarks.map((lm) => clients.push(lm.x, lm.y, lm.z))
         setClientsArr(clients)
+
+        // setClientsArr(clients)
+        // trueRef.current === true &&
+        //   landmarks.map((lm) => clients.push(lm.x, lm.y, lm.z))
+        // trueRef.current === true && setClientsArr(clients)
+
+        // if (trueRef.current === true) {
+        //   landmarks.map((lm) => clients.push(lm.x, lm.y, lm.z))
+        //   setClientsArr(clients)
+        // } else console.log(false)
 
         drawConnectors(canvasCtx, landmarks, Hands.HAND_CONNECTIONS, {
           color: "#FFFFFF",
         })
-        drawLandmarks(canvasCtx, landmarks, { color: "#1E39D4", lineWidth: 2 })
+        drawLandmarks(canvasCtx, landmarks, {
+          color: "#1E39D4",
+          lineWidth: 2,
+        })
       }
     } else {
       setCanRecord(false)
@@ -83,11 +137,8 @@ function Recording() {
 
   useEffect(() => {
     const hands = new Hands({
-      locateFile: (e) => {
-        return "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/".concat(
-          e
-        )
-        // return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
+      locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1635986972/${file}`
       },
     })
 
@@ -108,71 +159,130 @@ function Recording() {
         onFrame: async () => {
           await hands.send({ image: webcamRef.current.video })
         },
-        width: bounds.width,
-        height: bounds.height,
+        width: 640,
+        height: 480,
       })
       camera.start()
     }
   }, [])
 
   return (
-    <div
-      ref={ref}
-      style={{
-        // border: "orange solid 2px",
-        position: "absolute",
-        width: "640px",
-        // maxWidth: "500px",
-        height: "500px",
-        left: "50%",
-        top: "4%",
-        transform: "translate(-50%, 0)",
-      }}
-    >
+    <>
+      <TrueFalse
+        onClick={() => {
+          {
+            // console.log(trueRef.current)
+            // setCanRecord(trueRef.current)
+            // useStore.setState({ clientsArr: clients })
+            // setClientsArr(clients)
+            // console.log(clients)
+          }
+          // trueRef.current = !trueRef.current
+          // setIsTrue(!isTrue)
+        }}
+      >
+        {trueRef.current ? "true" : "false"}
+      </TrueFalse>
+
       <Webcam
         ref={webcamRef}
         style={{
+          border: "orange 3px solid",
           position: "absolute",
           width: "640px",
-
           height: "500px",
-
-          // width: "100%",
-          // height: "100%",
-          // position: "absolute",
-          // marginLeft: "auto",
-          // marginRight: "auto",
-          // top: 0,
-          // left: 0,
-          // right: 0,
           textAlign: "center",
-          zindex: 9,
-          // width: "100%"
-          // height: 480
+          // opacity: 0,
+          zIndex: 1,
         }}
       />
       <canvas
         ref={canvasRef}
-        className="output_canvas"
         style={{
+          border: "1px solid hotpink",
           position: "absolute",
-          width: "100%",
-          height: "100%",
-
-          // position: "absolute",
-          // marginLeft: "auto",
-          // marginRight: "auto",
-          // top: 0,
-          // left: 0,
-          // right: 0,
+          width: "640px",
+          height: "500px",
           textAlign: "center",
-          zindex: 9,
-          // width: 640,
-          // height: 480
+          zIndex: 20,
         }}
       ></canvas>
-    </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          width: "50%",
+          height: "900px",
+          border: "hotpink solid 1px",
+        }}
+      >
+        <Canvas dpr={2} camera={camera}>
+          <BoxTest landmarks={curr} rr={clients} />
+          <OrbitControls />
+        </Canvas>
+      </div>
+    </>
   )
 }
 
+function BoxTest({ arr, landmarks }) {
+  const ref = useRef()
+
+  const vec = new THREE.Vector3()
+  const thumb = new THREE.Vector3()
+  const index = new THREE.Vector3()
+  const th = 4
+  const ind = 8
+
+  const dist = new THREE.Vector2()
+  // const clientsArr = useStore((state) => state.clientsArr)
+  const canRecord = useStore((state) => state.canRecord)
+  let test = 0
+  useFrame(() => {
+    test += 0.07
+    if (canRecord) {
+      thumb.set(
+        landmarks.current[th].x,
+        landmarks.current[th].y,
+        landmarks.current[th].z
+      )
+      index.set(
+        landmarks.current[ind].x,
+        landmarks.current[ind].y,
+        landmarks.current[ind].z
+      )
+
+      // vec.set(0, arr[arr.length - 3] * 2, 0)
+      // vec.set(0, landmarks.current[0].x * 3, 0)
+      ref.current.scale.y = THREE.MathUtils.lerp(
+        ref.current.scale.y,
+        thumb.distanceTo(index) * 10,
+        0.4
+      )
+      // ref.current.position.lerp(vec, 0.05)
+    } else {
+      vec.set(0, 0, 0)
+      ref.current.position.lerp(vec, 0.01)
+    }
+
+    // console.log(clientsArr[clientsArr.length % 63])
+  })
+
+  return (
+    <Box
+      material={new THREE.MeshBasicMaterial({ wireframe: true })}
+      ref={ref}
+    />
+  )
+}
+
+const TrueFalse = styled.div`
+  cursor: pointer;
+  z-index: 9999;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: hotpink;
+`
 export default Recording

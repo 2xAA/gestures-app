@@ -2,24 +2,10 @@ import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { useStore } from "../state/store"
 import { animated, useTransition } from "@react-spring/web"
-
-// let textFile = null
-
-// const makeTextFile = text => {
-//   var data = new Blob([text], { type: "text/plain" })
-
-//   if (textFile !== null) {
-//     window.URL.revokeObjectURL(textFile)
-//   }
-
-//   textFile = window.URL.createObjectURL(data)
-
-//   return textFile
-// }
+import OutputText from "./outputText/OutputText"
 
 function RecordingUI() {
   const canRecord = useStore((state) => state.canRecord)
-  // const linkRef = useRef()
 
   const transition = useTransition(canRecord, {
     from: { opacity: 0 },
@@ -29,14 +15,6 @@ function RecordingUI() {
     trail: 30,
   })
 
-  useEffect(() => {
-    // console.log("CARECORD", canRecord)
-  }, [canRecord])
-
-  // const handleSaveClick = data => {
-  //   linkRef.current.href = makeTextFile(data)
-  // }
-
   return (
     <>
       <Holder>
@@ -44,6 +22,8 @@ function RecordingUI() {
         {transition(
           (style, item) => item && <AnimatedCountdown style={style} />
         )}
+        <LogPoints />
+        <OutputText />
       </Holder>
     </>
   )
@@ -51,34 +31,62 @@ function RecordingUI() {
 
 const AnimatedCountdown = animated(Countdown)
 
+function LogPoints() {
+  // const clientsArr = useStore((state) => state.clientsArr)
+  return null
+  // <SaveData
+  //   onClick={() => console.log(clientsArr)}
+  //   style={{ right: 0, backgroundColor: "#D34F2D" }}
+  // >
+  //   <span>
+  //     <p>😃</p>
+  //   </span>
+  // </SaveData>
+}
+
 function Countdown({ style }) {
   const [state, set] = useState(3)
 
+  const recording = useStore((state) => state.recording)
+  const setRecording = useStore((state) => state.setRecording)
+  // const setCanRecord = useStore((state) => state.setCanRecord)
+
   useEffect(() => {
-    if (state && state > 0) {
-      setTimeout(() => set(state - 1), 1000)
+    if (recording) {
+      setTimeout(() => setRecording(false), 1000)
     }
+  }, [])
 
-    if (state === 0) {
-      console.log("recording")
-
-      setTimeout(() => set(null), 2000)
-    }
-  }, [state])
+  // useEffect(() => {
+  //   if (state && state > 0) {
+  //     setTimeout(() => set(state - 1), 1000)
+  //   }
+  //   if (state === 0) {
+  //     setRecording(true)
+  //     console.log("RECORDING")
+  //     setTimeout(() => {
+  //       set(null)
+  //       setCanRecord(false)
+  //     }, 2000)
+  //   }
+  // }, [state])
 
   return (
     <RecordCountdown
-      style={{ ...style, backgroundColor: state > 0 ? "#fffffcc" : "#D34F2D" }}
+      style={{ ...style, backgroundColor: "#D34F2D" }}
+      // style={{ ...style, backgroundColor: state > 0 ? "#fffffcc" : "#D34F2D" }}
     >
-      {state > 0 ? (
+      {recording ? "true" : "false"}
+      {/* {state > 0 ? (
         <span> Recording in .. {state}</span>
-      ) : state !== null ? (
-        <span>recording gesture</span>
       ) : (
-        <span>
-          <p>😃</p>
-        </span>
-      )}
+        state !== null && <span>recording gesture</span>
+      )} */}
+      {/* {state > 0 ? (
+        <span> Recording in .. {state}</span>
+      ) : (
+        state !== null && <span>recording gesture</span>
+      )} */}
     </RecordCountdown>
   )
 }
@@ -88,7 +96,22 @@ const Title = styled.div`
   font-size: 3em;
 `
 
-const RecordCountdown = styled(animated.div)`
+const SaveData = styled.div`
+  position: absolute;
+  border: #ccc0c033 solid 2px;
+  color: #dcdcdccc;
+  text-align: center;
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  width: 9em;
+  height: 2em;
+
+  background-color: #dcdcdc55;
+`
+const RecordCountdown = styled.div`
   border: #ccc0c0 33solid 2px;
   color: #dcdcdccc;
   text-align: center;
@@ -102,12 +125,6 @@ const RecordCountdown = styled(animated.div)`
 
   background-color: #dcdcdc55;
 `
-
-// const SaveButton = styled.a`
-//   flex: 1;
-//   z-index: 10;
-//   background-color: blue;
-// `
 
 const Holder = styled.div`
   position: absolute;
