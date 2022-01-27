@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from "react"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils"
 import * as cam from "@mediapipe/camera_utils"
 import { Hands } from "@mediapipe/hands"
@@ -10,7 +10,7 @@ function Recording() {
   const recordTime = 5
 
   let camera = null
-  let clients = new Array()
+  let clients = []
 
   // ZUSTAND STATE SETTERS
   const setPoints = useStore((state) => state.setPoints)
@@ -73,6 +73,7 @@ function Recording() {
     if (results.multiHandLandmarks.length !== 0) {
       for (const landmarks of results.multiHandLandmarks) {
         canRecord.current &&
+          // eslint-disable-next-line
           landmarks.map((lm) => clients.push(lm.x, lm.y, lm.z))
 
         drawConnectors(canvasCtx, landmarks, Hands.HAND_CONNECTIONS, {
@@ -107,6 +108,7 @@ function Recording() {
       typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null
     ) {
+      // eslint-disable-next-line
       camera = new cam.Camera(webcamRef.current.video, {
         onFrame: async () => {
           await hands.send({ image: webcamRef.current.video })
