@@ -23,23 +23,19 @@
 var WaterShader = {
   uniforms: {
     byp: { value: 0 }, //apply the glitch ?
-    texture: { type: 't', value: null },
-    time: { type: 'f', value: 0.0 },
-    factor: { type: 'f', value: 0.0 },
-    resolution: { type: 'v2', value: null },
+    texture: { type: "t", value: null },
+    time: { type: "f", value: 0.0 },
+    factor: { type: "f", value: 0.0 },
+    resolution: { type: "v2", value: null },
   },
 
-  vertexShader: [
-    `varying vec2 vUv;
+  vertexShader: `varying vec2 vUv;
     void main(){  
       vUv = uv; 
       vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * modelViewPosition;
     }`,
-  ].join('\n'),
-
-  fragmentShader: [
-    `uniform int byp; //should we apply the glitch ?
+  fragmentShader: `uniform int byp; //should we apply the glitch ?
     uniform float time;
     uniform float factor;
     uniform vec2 resolution;
@@ -63,7 +59,6 @@ var WaterShader = {
         gl_FragColor = texture2D(texture, vUv);
       }
     }`,
-  ].join('\n'),
 }
 
 export { WaterShader }

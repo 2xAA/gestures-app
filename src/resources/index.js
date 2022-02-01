@@ -5,6 +5,7 @@ import { WaterPass } from "./postprocessing/WaterPass"
 import { AfterimagePass } from "./postprocessing/AfterimagePass"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass"
 import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass"
+import { OpticalFlowDistortionPass } from "./postprocessing/OpticalFlowDistortionPass"
 
 import { FXAAShader } from "./shaders/FXAAShader"
 import { ChromaticAberrationShader } from "./shaders/ChromaticAberrationShader"
@@ -18,5 +19,6 @@ export {
   AfterimagePass,
   UnrealBloomPass,
   FilmPass,
+  OpticalFlowDistortionPass,
   ChromaticAberrationShader,
 }
