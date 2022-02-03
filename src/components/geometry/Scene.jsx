@@ -1,9 +1,14 @@
-import { OrbitControls } from "@react-three/drei"
+import {
+  OrbitControls,
+  CubeCamera,
+  Sphere,
+  Environment,
+} from "@react-three/drei"
 import { extend, Canvas, useThree, useFrame } from "@react-three/fiber"
-import { Sphere, Environment } from "@react-three/drei"
 import React, { useEffect, useRef, useState, useMemo, Suspense } from "react"
 import { WebGL1Renderer, Vector2, MeshStandardMaterial } from "three"
 import PlaybackSpheres from "./PlaybackSpheres"
+import { Particles } from "./Particles"
 import * as resources from "../../resources/index.js"
 
 extend(resources)
@@ -21,10 +26,12 @@ function EffectOne() {
     1
   )
 
+  const aspect = useMemo(() => new Vector2(size.width, size.height), [size])
+
   return (
     <>
-      <pointLight position={[2, 3, 10]} color={"purple"} intensity={0.9} />
-      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={0.8} />
+      <pointLight position={[2, 3, 10]} color={"purple"} intensity={1.9} />
+      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={1.8} />
       <ambientLight color={"white"} intensity={0.2} />
       <effectComposer ref={composer} args={[gl]}>
         <renderPass attachArray="passes" scene={scene} camera={camera} />
@@ -36,8 +43,8 @@ function EffectOne() {
           material-uniforms-power-value={0.02}
         /> */}
         {/* <opticalFlowDistortionPass attachArray="passes" factor={0.92} /> */}
-        {/* <unrealBloomPass attachArray="passes" args={[aspect, 1.1, 0.2, 0]} /> */}
-        {/* <afterimagePass attachArray="passes" factor={0.92} /> */}
+        {/* <afterimagePass attachArray="passes" factor={0.42} /> */}
+        <unrealBloomPass attachArray="passes" args={[aspect, 0.9, 0.2, 0]} />
         <shaderPass
           attachArray="passes"
           args={[resources.FXAAShader]}
@@ -172,6 +179,46 @@ function EffectFour() {
   )
 }
 
+function EffectFive() {
+  const composer = useRef()
+  const { scene, gl, size, camera } = useThree()
+
+  useEffect(
+    () => void composer.current.setSize(size.width, size.height),
+    [size]
+  )
+  useFrame(
+    ({ gl }) => void ((gl.autoClear = false), composer.current.render()),
+    1
+  )
+
+  return (
+    <>
+      <pointLight position={[2, 3, 10]} color={"purple"} intensity={0.9} />
+      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={0.8} />
+      <ambientLight color={"white"} intensity={0.2} />
+      <effectComposer ref={composer} args={[gl]}>
+        <renderPass attachArray="passes" scene={scene} camera={camera} />
+        {/* <shaderPass
+          attachArray="passes"
+          args={[resources.ChromaticAberrationShader]}
+          material-uniforms-resolution-value={[1 / size.width, 1 / size.height]}
+          material-uniforms-power-value={0.02}
+        /> */}
+        <opticalFlowDistortionPass attachArray="passes" factor={0.92} />
+        {/* <unrealBloomPass attachArray="passes" args={[aspect, 1.1, 0.2, 0]} /> */}
+        {/* <afterimagePass attachArray="passes" factor={0.92} /> */}
+        <shaderPass
+          attachArray="passes"
+          args={[resources.FXAAShader]}
+          material-uniforms-resolution-value={[1 / size.width, 1 / size.height]}
+          renderToScreen
+        />
+      </effectComposer>
+    </>
+  )
+}
+
 const material = new MeshStandardMaterial({ color: "white" })
 
 const glassMaterialProps = {
@@ -187,22 +234,38 @@ const glassMaterialProps = {
   attenuationDistance: 0,
 }
 
+const particles = <Particles position={[0, 0, -2000]} />
+
+const smallGlassSphere = (
+  <Sphere scale={0.02}>
+    <meshPhysicalMaterial attach="material" {...glassMaterialProps} />
+  </Sphere>
+)
+
+const smallWhiteSphere = <Sphere material={material} scale={0.02} />
+
+const largeGlassSphere = (
+  <Sphere scale={0.03}>
+    <meshPhysicalMaterial attach="material" {...glassMaterialProps} />
+  </Sphere>
+)
+
+const largeReflectiveSphere = (
+  <Sphere scale={0.03}>
+    <meshStandardMaterial
+      attach="material"
+      metalness={1}
+      roughness={0}
+      color={"white"}
+    />
+  </Sphere>
+)
+
 function Scene() {
   let [effectId, setEffectId] = useState(0)
   const maxEffects = 5
   let effectElement
   let geometryElement
-
-  const cross = (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <mesh position={[0, 0, -10]} material-color="hotpink">
-        <planeGeometry args={[20, 2]} />
-      </mesh>
-      <mesh position={[0, 0, -10]} material-color="hotpink">
-        <planeGeometry args={[2, 20]} />
-      </mesh>
-    </group>
-  )
 
   function cycleEffects() {
     if (effectId < maxEffects - 1) {
@@ -214,27 +277,19 @@ function Scene() {
 
   if (effectId === 0) {
     effectElement = EffectOne
-    geometryElement = (
-      <Sphere scale={0.03}>
-        <meshPhysicalMaterial attach="material" {...glassMaterialProps} />
-      </Sphere>
-    )
+    geometryElement = largeReflectiveSphere
   } else if (effectId === 1) {
     effectElement = EffectTwo
-    geometryElement = <Sphere material={material} scale={0.02} />
+    geometryElement = smallWhiteSphere
   } else if (effectId === 2) {
     effectElement = EffectThree
-    geometryElement = (
-      <Sphere scale={0.02}>
-        <meshPhysicalMaterial attach="material" {...glassMaterialProps} />
-      </Sphere>
-    )
+    geometryElement = smallGlassSphere
   } else if (effectId === 3) {
     effectElement = EffectFour
-    geometryElement = <Sphere material={material} scale={0.02} />
+    geometryElement = largeGlassSphere
   } else if (effectId === 4) {
-    effectElement = EffectFour
-    geometryElement = <Sphere material={material} scale={0.02} />
+    effectElement = EffectFive
+    geometryElement = smallWhiteSphere
   }
 
   console.log(geometryElement)
@@ -249,12 +304,29 @@ function Scene() {
         gl={(canvas) => new WebGL1Renderer({ canvas, alpha: false })}
       >
         <Suspense fallback={null}>
+          {effectId === 0 || effectId === 4 ? particles : null}
           <Environment background={false} files="adams_place_bridge_1k.hdr" />
-          <PlaybackSpheres>{geometryElement}</PlaybackSpheres>
-          {effectId === 0 || effectId === 4 ? cross : null}
-          {effectElement ? React.createElement(effectElement) : null}
-          <OrbitControls />
         </Suspense>
+
+        <CubeCamera
+          position={[0, 0, 0]}
+          resolution={256}
+          frames={Infinity}
+          near={1}
+          far={1000}
+        >
+          {(texture) => (
+            <PlaybackSpheres
+              key={effectId}
+              envMap={effectId === 0 || effectId === 4 ? texture : null}
+            >
+              {geometryElement}
+            </PlaybackSpheres>
+          )}
+        </CubeCamera>
+
+        {effectElement ? React.createElement(effectElement) : null}
+        <OrbitControls />
       </Canvas>
     </>
   )

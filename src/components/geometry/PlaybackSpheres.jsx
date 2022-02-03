@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber"
 import { useStore } from "state/store"
 import { splitarray, transposeArray } from "utils/helpers"
 
-function Spheres({ coordinates, children }) {
+function Spheres({ coordinates, children, envMap }) {
   const pos = new THREE.Vector3()
   let frame = 0
   const ref = useRef()
@@ -28,18 +28,19 @@ function Spheres({ coordinates, children }) {
       coordinates[Math.floor(frame) % coordinates.length][2],
       0.1
     )
+    ref.current.material.envMap = envMap
   })
 
   return (
     <>
-      {React.Children.map(children.children, (child) => (
+      {React.Children.map(children, (child) => (
         <child.type {...child.props} position={coordinates[0]} ref={ref} />
       ))}
     </>
   )
 }
 
-function PlaybackSpheres(children) {
+function PlaybackSpheres({ children, envMap }) {
   const [handArr, set] = useState([])
   const points = useStore((state) => state.points)
 
@@ -55,7 +56,7 @@ function PlaybackSpheres(children) {
     <group position={[5, 4, 0]} scale={-8}>
       {handArr &&
         handArr?.map((v, i) => (
-          <Spheres key={i} coordinates={v}>
+          <Spheres key={i} coordinates={v} envMap={envMap}>
             {children}
           </Spheres>
         ))}
