@@ -10,10 +10,11 @@ import { WebGL1Renderer, Vector2, MeshStandardMaterial } from "three"
 import PlaybackSpheres from "./PlaybackSpheres"
 import { Particles } from "./Particles"
 import * as resources from "../../resources/index.js"
+import { useControls } from "leva"
 
 extend(resources)
 
-function EffectOne() {
+function EffectOne({ lightColor1, lightColor2 }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -30,8 +31,8 @@ function EffectOne() {
 
   return (
     <>
-      <pointLight position={[2, 3, 10]} color={"purple"} intensity={1.9} />
-      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={1.8} />
+      <pointLight position={[2, 3, 10]} color={lightColor1} intensity={1.9} />
+      <pointLight position={[-5, 0, 0]} color={lightColor2} intensity={1.8} />
       <ambientLight color={"white"} intensity={0.2} />
       <effectComposer ref={composer} args={[gl]}>
         <renderPass attachArray="passes" scene={scene} camera={camera} />
@@ -56,7 +57,7 @@ function EffectOne() {
   )
 }
 
-function EffectTwo() {
+function EffectTwo({ lightColor1, lightColor2 }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -73,8 +74,8 @@ function EffectTwo() {
 
   return (
     <>
-      <pointLight position={[2, 3, 10]} color={"red"} intensity={0.4} />
-      <pointLight position={[-5, 0, 0]} color={"blue"} intensity={0.6} />
+      <pointLight position={[2, 3, 10]} color={lightColor1} intensity={0.4} />
+      <pointLight position={[-5, 0, 0]} color={lightColor2} intensity={0.6} />
       <ambientLight color={"white"} intensity={0.2} />
       <effectComposer ref={composer} args={[gl]}>
         <renderPass attachArray="passes" scene={scene} camera={camera} />
@@ -138,7 +139,7 @@ function EffectThree() {
   )
 }
 
-function EffectFour() {
+function EffectFour({ lightColor1, lightColor2 }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -153,8 +154,8 @@ function EffectFour() {
 
   return (
     <>
-      <pointLight position={[2, 3, 10]} color={"purple"} intensity={0.9} />
-      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={0.8} />
+      <pointLight position={[2, 3, 10]} color={lightColor1} intensity={0.9} />
+      <pointLight position={[-5, 0, 0]} color={lightColor2} intensity={0.8} />
       <ambientLight color={"white"} intensity={0.2} />
       <effectComposer ref={composer} args={[gl]}>
         <renderPass attachArray="passes" scene={scene} camera={camera} />
@@ -179,7 +180,7 @@ function EffectFour() {
   )
 }
 
-function EffectFive() {
+function EffectFive({ lightColor1, lightColor2 }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -194,8 +195,8 @@ function EffectFive() {
 
   return (
     <>
-      <pointLight position={[2, 3, 10]} color={"purple"} intensity={0.9} />
-      <pointLight position={[-5, 0, 0]} color={"cyan"} intensity={0.8} />
+      <pointLight position={[2, 3, 10]} color={lightColor1} intensity={0.9} />
+      <pointLight position={[-5, 0, 0]} color={lightColor2} intensity={0.8} />
       <ambientLight color={"white"} intensity={0.2} />
       <effectComposer ref={composer} args={[gl]}>
         <renderPass attachArray="passes" scene={scene} camera={camera} />
@@ -294,6 +295,11 @@ function Scene() {
 
   console.log(geometryElement)
 
+  const lightProps = useControls({
+    lightColor1: "purple",
+    lightColor2: "cyan",
+  })
+
   return (
     <>
       <button onClick={cycleEffects}>
@@ -325,7 +331,7 @@ function Scene() {
           )}
         </CubeCamera>
 
-        {effectElement ? React.createElement(effectElement) : null}
+        {effectElement ? React.createElement(effectElement, lightProps) : null}
         <OrbitControls />
       </Canvas>
     </>
