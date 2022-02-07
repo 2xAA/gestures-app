@@ -8,7 +8,7 @@ import { degToRad } from "three/src/math/MathUtils"
 
 export default function Model({ ...props }) {
   const group = useRef()
-  const { nodes, materials } = useGLTF("/suzie.glb")
+  const { nodes } = useGLTF("/suzie.glb")
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh
