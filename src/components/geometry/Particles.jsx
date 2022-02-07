@@ -7,8 +7,8 @@ import { useFrame } from "@react-three/fiber"
 const palette = colors[Math.floor(Math.random() * colors.length)]
 
 export function Particles({
-  count = 2000,
-  size = 2,
+  count = 1000,
+  size = 0.5,
   positionFactor = 60,
   rotationSpeed = 0,
 }) {
