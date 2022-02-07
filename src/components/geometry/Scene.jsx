@@ -11,6 +11,7 @@ import PlaybackSpheres from "./PlaybackSpheres"
 import { Particles } from "./Particles"
 import * as resources from "../../resources/index.js"
 import { useControls } from "leva"
+import Suzie from "./Suzie"
 
 extend(resources)
 
@@ -264,7 +265,7 @@ const largeReflectiveSphere = (
 
 function Scene() {
   let [effectId, setEffectId] = useState(0)
-  const maxEffects = 5
+  const maxEffects = 6
   let effectElement
   let geometryElement
 
@@ -291,6 +292,13 @@ function Scene() {
   } else if (effectId === 4) {
     effectElement = EffectFive
     geometryElement = smallWhiteSphere
+  } else if (effectId === 5) {
+    effectElement = EffectOne
+    geometryElement = (
+      <Suspense fallback={largeReflectiveSphere}>
+        <Suzie scale={[0.3, 0.3, 0.3]} />
+      </Suspense>
+    )
   }
 
   console.log(geometryElement)
@@ -324,6 +332,7 @@ function Scene() {
           {(texture) => (
             <PlaybackSpheres
               key={effectId}
+              singlePoint={effectId === 5}
               envMap={effectId === 0 || effectId === 4 ? texture : null}
             >
               {geometryElement}
