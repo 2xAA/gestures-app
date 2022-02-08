@@ -176,10 +176,10 @@ const RecordButton = styled.div`
   cursor: pointer;
   z-index: 9999;
   position: absolute;
-  left: 0;
   width: 90px;
   height: 90px;
   background: hotpink;
+  top: 186px;
 `
 export default Recording
 
