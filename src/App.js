@@ -2,45 +2,58 @@ import styled from "styled-components"
 // import Home from "./pages/home/Home"
 import background from "assets/images/background.jpg"
 import Recording from "components/recording/Recording"
+import { useStore } from "state/store"
 
 import Scene from "components/geometry/Scene"
+import { handData } from "resources/dummy-data"
 
 function App() {
+  const points = useStore((state) => state.points)
+
+  const galleryExamplePoints = handData
+
   return (
     <Holder>
       <Recording />
-      <DisplayHolder>
-        <Scene />
+      <DisplayHolder style={{ width: "100%" }}>
+        <Scene points={points} />
       </DisplayHolder>
+
+      <Gallery>
+        {[...galleryExamplePoints, ...galleryExamplePoints].map((data, i) => (
+          <DisplayHolder key={i}>
+            <Scene useMouseDetection={true} points={data} />
+          </DisplayHolder>
+        ))}
+      </Gallery>
     </Holder>
   )
 }
 
 const Holder = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
   background-image: url(${background});
   background-repeat: no-repeat;
   background-size: cover;
 
-  overflow: hidden;
+  padding: 4rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
 `
 
 const DisplayHolder = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, 0);
-  margin-top: 2em;
-
   border: white solid 2px;
-  position: absolute;
-  width: 100%;
-  height: 50%;
   max-width: 640px;
-  max-height: 500px;
+  max-height: 480px;
+  width: calc(50% - 4px);
+  aspect-ratio: 4/3;
+`
+
+const Gallery = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 2em;
 `
 
 export default App

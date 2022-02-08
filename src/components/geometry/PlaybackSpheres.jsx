@@ -1,7 +1,6 @@
 import React, { useRef, useState, useLayoutEffect } from "react"
 import * as THREE from "three"
 import { useFrame } from "@react-three/fiber"
-import { useStore } from "state/store"
 import { splitarray, transposeArray } from "utils/helpers"
 
 function Spheres({ coordinates, children, envMap, singlePointZRotation }) {
@@ -10,7 +9,7 @@ function Spheres({ coordinates, children, envMap, singlePointZRotation }) {
   const ref = useRef()
   const childRef = useRef()
 
-  useFrame(({ clock }) => {
+  useFrame(() => {
     frame = frame + 0.33
     pos.set(coordinates[frame])
 
@@ -43,7 +42,7 @@ function Spheres({ coordinates, children, envMap, singlePointZRotation }) {
         childRef.current.material.map = envMap
       }
     }
-  })
+  }, 0)
 
   return (
     <>
@@ -56,9 +55,8 @@ function Spheres({ coordinates, children, envMap, singlePointZRotation }) {
   )
 }
 
-function PlaybackSpheres({ children, envMap, singlePoint = false }) {
+function PlaybackSpheres({ children, envMap, points, singlePoint = false }) {
   const [handArr, set] = useState([])
-  const points = useStore((state) => state.points)
   const [zRotation, setZRotation] = useState([])
 
   useLayoutEffect(() => {
@@ -66,8 +64,6 @@ function PlaybackSpheres({ children, envMap, singlePoint = false }) {
       splitarray(splitarray(points, 3), 21),
       21
     ).filter((v) => v.length !== 0)
-
-    console.log("formatted", formatted)
 
     if (singlePoint && formatted.length) {
       const rotation = []

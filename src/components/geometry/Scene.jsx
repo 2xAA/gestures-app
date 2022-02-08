@@ -15,7 +15,7 @@ import Suzie from "./Suzie"
 
 extend(resources)
 
-function EffectOne({ lightColor1, lightColor2 }) {
+function EffectOne({ lightColor1, lightColor2, shouldRender }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -24,8 +24,9 @@ function EffectOne({ lightColor1, lightColor2 }) {
     [size]
   )
   useFrame(
-    ({ gl }) => void ((gl.autoClear = false), composer.current.render()),
-    1
+    ({ gl }) =>
+      void ((gl.autoClear = false), shouldRender && composer.current.render()),
+    2
   )
 
   const aspect = useMemo(() => new Vector2(size.width, size.height), [size])
@@ -58,7 +59,7 @@ function EffectOne({ lightColor1, lightColor2 }) {
   )
 }
 
-function EffectTwo({ lightColor1, lightColor2 }) {
+function EffectTwo({ lightColor1, lightColor2, shouldRender }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -67,8 +68,9 @@ function EffectTwo({ lightColor1, lightColor2 }) {
     [size]
   )
   useFrame(
-    ({ gl }) => void ((gl.autoClear = true), composer.current.render()),
-    1
+    ({ gl }) =>
+      void ((gl.autoClear = true), shouldRender && composer.current.render()),
+    2
   )
 
   const aspect = useMemo(() => new Vector2(size.width, size.height), [size])
@@ -100,7 +102,7 @@ function EffectTwo({ lightColor1, lightColor2 }) {
   )
 }
 
-function EffectThree() {
+function EffectThree({ shouldRender }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -109,8 +111,9 @@ function EffectThree() {
     [size]
   )
   useFrame(
-    ({ gl }) => void ((gl.autoClear = true), composer.current.render()),
-    1
+    ({ gl }) =>
+      void ((gl.autoClear = true), shouldRender && composer.current.render()),
+    2
   )
 
   const aspect = useMemo(() => new Vector2(size.width, size.height), [size])
@@ -140,7 +143,7 @@ function EffectThree() {
   )
 }
 
-function EffectFour({ lightColor1, lightColor2 }) {
+function EffectFour({ lightColor1, lightColor2, shouldRender }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -149,8 +152,9 @@ function EffectFour({ lightColor1, lightColor2 }) {
     [size]
   )
   useFrame(
-    ({ gl }) => void ((gl.autoClear = false), composer.current.render()),
-    1
+    ({ gl }) =>
+      void ((gl.autoClear = false), shouldRender && composer.current.render()),
+    2
   )
 
   return (
@@ -181,7 +185,7 @@ function EffectFour({ lightColor1, lightColor2 }) {
   )
 }
 
-function EffectFive({ lightColor1, lightColor2 }) {
+function EffectFive({ lightColor1, lightColor2, shouldRender }) {
   const composer = useRef()
   const { scene, gl, size, camera } = useThree()
 
@@ -190,8 +194,9 @@ function EffectFive({ lightColor1, lightColor2 }) {
     [size]
   )
   useFrame(
-    ({ gl }) => void ((gl.autoClear = false), composer.current.render()),
-    1
+    ({ gl }) =>
+      void ((gl.autoClear = false), shouldRender && composer.current.render()),
+    2
   )
 
   return (
@@ -263,8 +268,16 @@ const largeReflectiveSphere = (
   </Sphere>
 )
 
-function Scene() {
-  let [effectId, setEffectId] = useState(0)
+function Scene({ points, useMouseDetection = false }) {
+  const [effectId, setEffectId] = useState(0)
+  const [mouseOver, setMouseOver] = useState(false)
+  const [overrideRender, setOverrideRender] = useState(true)
+
+  const DoneLoading = () => {
+    setOverrideRender(false)
+    return null
+  }
+
   const maxEffects = 6
   let effectElement
   let geometryElement
@@ -301,16 +314,24 @@ function Scene() {
     )
   }
 
-  console.log(geometryElement)
-
   const lightProps = useControls({
     lightColor1: "purple",
     lightColor2: "cyan",
   })
 
+  const shouldRender =
+    overrideRender || (useMouseDetection && mouseOver) || !useMouseDetection
+
   return (
-    <>
-      <button onClick={cycleEffects}>
+    <div
+      onMouseEnter={() => setMouseOver(true)}
+      onMouseLeave={() => setMouseOver(false)}
+      style={{ height: "100%", position: "relative" }}
+    >
+      <button
+        onClick={cycleEffects}
+        style={{ position: "absolute", top: "1em", left: "1em", zIndex: 1 }}
+      >
         Cycle Effect ({effectId + 1}/{maxEffects})
       </button>
       <Canvas
@@ -320,6 +341,7 @@ function Scene() {
         <Suspense fallback={null}>
           {effectId === 0 || effectId === 4 ? particles : null}
           <Environment background={false} files="adams_place_bridge_1k.hdr" />
+          <DoneLoading />
         </Suspense>
 
         <CubeCamera
@@ -334,16 +356,18 @@ function Scene() {
               key={effectId}
               singlePoint={effectId === 5}
               envMap={effectId === 0 || effectId === 4 ? texture : null}
+              points={points}
             >
               {geometryElement}
             </PlaybackSpheres>
           )}
         </CubeCamera>
-
-        {effectElement ? React.createElement(effectElement, lightProps) : null}
+        {effectElement
+          ? React.createElement(effectElement, { ...lightProps, shouldRender })
+          : null}
         <OrbitControls />
       </Canvas>
-    </>
+    </div>
   )
 }
 

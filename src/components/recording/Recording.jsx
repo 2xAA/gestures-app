@@ -132,41 +132,33 @@ function Recording() {
           Record
           <div ref={timerRef} style={{ width: "100%", height: "50%" }}></div>
         </RecordButton>
-      </UIHolder>
-      <RecordingHolder>
-        <Webcam
-          ref={webcamRef}
-          style={{
-            position: "absolute",
-            // opacity: 0,
-            border: "orange 3px solid",
-            width: "100%",
-            height: "100%",
-            textAlign: "center",
-            zIndex: 1,
-          }}
-        />
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: "absolute",
 
-            border: "1px solid hotpink",
-            width: "100%",
-            height: "100%",
-            textAlign: "center",
-            zIndex: 20,
-          }}
-        ></canvas>
-      </RecordingHolder>
+        <RecordingHolder>
+          <Webcam
+            ref={webcamRef}
+            style={{
+              position: "absolute",
+              // opacity: 0,
+              top: 0,
+              left: 0,
+            }}
+          />
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          ></canvas>
+        </RecordingHolder>
+      </UIHolder>
     </>
   )
 }
 const UIHolder = styled.div`
-  margin: 4rem;
-  position: absolute;
-  left: 0;
-  height: 100%;
+  padding: 4rem;
+  width: 100%;
 `
 
 const ResetButton = styled.div`
@@ -192,16 +184,14 @@ const RecordButton = styled.div`
 export default Recording
 
 const RecordingHolder = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 0%;
-  margin-top: 2em;
-  transform: translate(-50%, 0);
-
   border: white solid 2px;
+  aspect-ratio: 4/3;
+
   width: 100%;
-  height: 50%;
 
   max-width: 640px;
-  max-height: 500px;
+  max-height: 480px;
+
+  position: relative;
+  margin: 2em auto 0;
 `
